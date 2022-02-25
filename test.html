@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="//cdn.datatables.net/1.11.4/css/jquery.dataTables.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src="//cdn.datatables.net/1.11.4/js/jquery.dataTables.min.js"></script>
+</head>
+<style>
+    #board{
+        width: 100px;
+        height: 100px;
+        background: red;
+    }
+    body {
+    padding: 40px;
+    margin: auto;
+    background: rgb(242 244 247);
+    font-family: system-ui;
+    box-sizing: border-box;
+    height: 100vh;
+    width: 100vw;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  width: 400px;
+  gap: 1rem;
+  /* height: 400px; */
+  color: rgb(152, 162, 179);
+  font-size: 14px;
+  background: rgb(252, 252, 253);
+  box-shadow: rgb(16 24 40 / 30%) 0px 0.5px 2px;
+  border-radius: 8px;
+  margin: auto;
+}
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+
+.card-footer .assigned {
+  display: flex;
+  gap: 0.2rem;
+}
+
+
+.card-header h2 {
+  color: rgb(102, 112, 133);
+  font-weight: bold;
+  line-height: 18px;
+  font-size: 15px;
+}
+
+.card-info {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  -webkit-box-align: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+</style>
+<body>
+    <div id="main">
+        <div class="card" id="card">
+            <div class="card-header">
+                <h2>Make a Kanban App</h2>
+                <div class="card-info"><span class="date">13 Mar, 2021</span><span class="dot"></span><span class="author">Created by Atakan</span></div>
+            </div>
+            <div class="card-body">
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                
+            </div>
+        </div>
+    </div>
+        <div>
+        <h1>
+            <div id="data"></div>
+        </h1>
+    </div>
+    <div id="board"></div>
+
+    <script>
+        let table; 
+        const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@bookTicker/ethusdt@bookTicker/ltcbtc@bookTicker/neobtc@bookTicker");
+        let SetData = [];
+        let df;
+        ws.onopen = () => {
+            console.log("Connected!");
+        }
+
+        ws.onmessage = (e) => {
+            Data = JSON.parse(e.data);
+            // console.log(Data);
+
+            if (SetData.length < 0) {
+                SetData.push(Data)
+            }
+            else {
+                let a = SetData.find(f => f.s === Data.s)
+                if (a) {
+                    a.b = Data.b
+                    a.a = Data.a
+                    a.B = Data.B
+                    a.A = Data.A
+                    a.u = Data.u
+
+                }
+                else {
+                    SetData.push(Data)
+                }
+            }
+        }
+        
+        $(document).ready(function () {
+            // console.log("****",SetData);
+            setInterval(() => {
+            document.getElementById("data").innerText = JSON.stringify(SetData);
+            console.log(SetData.length);
+            }, 1000);
+        });
+        ws.onclose = () => {
+            console.log("Closed!");
+        }
+        // data.forEach((Data)=>{
+        //     if (SetData.length<0){
+        //         SetData.push(Data)
+        //     }
+        //     else{
+        //         let a = SetData.find(f=>f.A===Data.A)
+        //         if (a){
+        //             console.log();
+        //             // SetData.push(Data);
+        //             a.B = Data.B
+        //         }
+        //         else{
+        //             SetData.push(Data)
+        //         }
+        //     }
+        //     console.log(data);
+        // })
+    </script>
+</body>
+
+</html>
